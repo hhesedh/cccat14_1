@@ -6,8 +6,14 @@ test('Não deve criar corrida se o  is_passenger do passageiro for false', async
         from: { lat: 1, long: 2 },
         to: { lat: 1, long: 2 }
     }
-    requestRide(ride);
-
     await expect(() => requestRide(ride)).rejects.toThrow(new Error("O id não é de passageiro"));
+});
 
+test('Não deve criar corrida se o passageiro tiver uma corrida em andamento', async () => {
+    const ride = {
+        accountId: '8b707076-a1d9-4cb8-b182-6dfcd399f806',
+        from: { lat: 1, long: 2 },
+        to: { lat: 1, long: 2 }
+    }
+    await expect(() => requestRide(ride)).rejects.toThrow(new Error("O passageiro possui uma corrida em andamento"));
 });
