@@ -8,7 +8,8 @@ export async function requestRide({ accountId, from, to }: { accountId: string, 
         const [account] = await connection.query("select * from cccat14.account where account_id = $1", [accountId]);
         if (!account.is_passenger) throw new Error("O id não é de passageiro");
         const [ride] = await connection.query("select * from cccat14.ride where passenger_id = $1", [accountId]);
-        console.log('ride', ride);
+        if (ride && ride.status !== 'completed') throw new Error("O passageiro possui uma corrida em andamento");
+
     } finally {
         await connection.$pool.end();
     }
