@@ -15,7 +15,7 @@ export async function getAccountController(req: Request, res: Response) {
 export async function signupController(req: Request, res: Response) {
     try {
         const createdAccount = await signup(req.body);
-        res.status(200).json(createdAccount);
+        res.status(201).json(createdAccount);
     } catch (err: any) {
         console.log(err.message);
         res.status(500).json({ error: err.message ?? 'Erro ao fazer signup' })
