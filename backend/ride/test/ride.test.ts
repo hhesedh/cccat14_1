@@ -15,7 +15,7 @@ test('Não deve criar corrida se o passageiro tiver uma corrida em andamento', a
         from: { lat: 1, long: 2 },
         to: { lat: 3, long: 4 }
     }
-    await expect(() => requestRide(rideInput)).rejects.toThrow(new Error("O passageiro possui uma corrida em andamento"));
+    await expect(() => requestRide(rideInput)).rejects.toThrow(new Error("O passageiro possui corrida(s) em andamento"));
 });
 
 

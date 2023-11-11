@@ -10,7 +10,7 @@ export async function requestRide({ passengerId, from, to }: { passengerId: stri
         if (!account.is_passenger) throw new Error("O id não é de passageiro");
         const passengerRides = await connection.query("select * from cccat14.ride where passenger_id = $1", [passengerId]);
         const passengerHasRideInProgress = passengerRides.some((ride: any) => ride.status !== 'completed');
-        if (passengerHasRideInProgress) throw new Error("O passageiro possui uma corrida em andamento");
+        if (passengerHasRideInProgress) throw new Error("O passageiro possui corrida(s) em andamento");
         const rideId = crypto.randomUUID();
         const ride = {
             rideId,
