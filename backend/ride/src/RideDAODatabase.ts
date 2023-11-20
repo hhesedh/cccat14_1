@@ -23,7 +23,13 @@ export default class RideDAODatabase implements RideDAO {
 
 	async acceptRide(rideId: string, driver_id: string): Promise<any> {
 		const connection = pgp()("postgres://postgres:123456@localhost:5432/app");
-		const rides = await connection.query("update cccat14.ride set driver_id = $1, status = $2  where ride_id = $3", [driver_id, 'accepted', rideId]);
+		await connection.query("update cccat14.ride set driver_id = $1, status = $2  where ride_id = $3", [driver_id, 'accepted', rideId]);
+		await connection.$pool.end();
+	}
+
+	async startRide(rideId: string): Promise<any> {
+		const connection = pgp()("postgres://postgres:123456@localhost:5432/app");
+		await connection.query("update cccat14.ride set status = $1 where ride_id = $2", ['in_progress', rideId]);
 		await connection.$pool.end();
 	}
 
