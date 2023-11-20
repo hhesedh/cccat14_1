@@ -46,8 +46,17 @@ function createUser(name: string, isPassenger: boolean) {
 		cpf: "97456321558",
 		isPassenger,
 		isDriver: !isPassenger,
-		password: "123456"
+		password: "123456",
+		...(isPassenger ? {} : { carPlate: generateCarPlate() })
 	};
+}
+
+
+function generateCarPlate(): string {
+	const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+	const letrasAleatorias = Array(3).fill(null).map(() => letras[Math.floor(Math.random() * 26)]);
+	const numerosAleatorios = Array(4).fill(null).map(() => Math.floor(Math.random() * 10));
+	return [...letrasAleatorias, ...numerosAleatorios].join("");
 }
 
 beforeEach(() => {
@@ -66,7 +75,6 @@ test("Deve verificar se o account_id tem is_driver true", async () => {
 	const driverOutputSignup = await signupPassenger(signup);
 	const passengerOutputSignup = await signupPassenger(signup);
 	const outputRequestRide = await createRequestRide(requestRide, passengerOutputSignup.accountId);
-
 	await expect(() => acceptRide.execute(outputRequestRide.rideId, driverOutputSignup.accountId)).rejects.toThrow(new Error("Conta deve ser de um motorista"));
 });
 
@@ -75,6 +83,23 @@ test('Deve verificar se o status da corrida é "requested", se não for, lançar
 	const driverOutputSignup = await signupDriver(signup);
 	const passengerOutputSignup = await signupPassenger(signup);
 	const outputRequestRide = await createRequestRide(requestRide, passengerOutputSignup.accountId);
-
 	await expect(() => acceptRide.execute(outputRequestRide.rideId, driverOutputSignup.accountId)).rejects.toThrow(new Error("Corrida deve ter o status requested"));
+});
+
+// verificar essa condição
+test('deve verificar se o motorista já tem outra corrida com status "accepted" ou "in_progress", se tiver lançar um erro', async () => {
+	const driverOutputSignup = await signupDriver(signup);
+	const passengerOutputSignup = await signupPassenger(signup);
+	const outputRequestRide = await createRequestRide(requestRide, passengerOutputSignup.accountId);
+	await expect(() => acceptRide.execute(outputRequestRide.rideId, driverOutputSignup.accountId)).rejects.toThrow(new Error("Motorista não pode ter outra corrida com status accepted ou in_progress"));
+});
+
+test('Deve associar o driver_id na corrida e mudar o status para "accepted"', async () => {
+	const driverOutputSignup = await signupDriver(signup);
+	const passengerOutputSignup = await signupPassenger(signup);
+	const outputRequestRide = await createRequestRide(requestRide, passengerOutputSignup.accountId);
+	await acceptRide.execute(outputRequestRide.rideId, driverOutputSignup.accountId);
+	const ride = await getRide.execute(outputRequestRide.rideId);
+	expect(ride.status).toBe("accepted");
+	expect(ride.driver_id).toBe(driverOutputSignup.accountId);
 });

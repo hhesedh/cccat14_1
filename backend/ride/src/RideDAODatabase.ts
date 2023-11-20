@@ -14,9 +14,17 @@ export default class RideDAODatabase implements RideDAO {
 		await connection.$pool.end();
 		return ride;
 	}
+	async getByDriverId(driverId: string) {
+		const connection = pgp()("postgres://postgres:123456@localhost:5432/app");
+		const rides = await connection.query("select * from cccat14.ride where driver_id = $1", [driverId]);
+		await connection.$pool.end();
+		return rides;
+	}
 
-	acceptRide(rideId: string, driver_id: string): Promise<any> {
-		throw new Error("Method not implemented.");
+	async acceptRide(rideId: string, driver_id: string): Promise<any> {
+		const connection = pgp()("postgres://postgres:123456@localhost:5432/app");
+		const rides = await connection.query("update cccat14.ride set driver_id = $1, status = $2  where ride_id = $3", [driver_id, 'accepted', rideId]);
+		await connection.$pool.end();
 	}
 
 }
