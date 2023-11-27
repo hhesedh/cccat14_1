@@ -6,7 +6,7 @@ export default class AcceptRide {
 	constructor(private rideRepository: RideRepository, private accountRepository: AccountRepository) {
 	}
 
-	async execute(input: any) {
+	async execute(input: Input): Promise<void> {
 		const account = await this.accountRepository.getById(input.driverId);
 		if (account && !account.isDriver) throw new Error("Only drivers can accept a ride");
 		const ride = await this.rideRepository.getById(input.rideId);
@@ -15,4 +15,9 @@ export default class AcceptRide {
 		await this.rideRepository.update(ride);
 	}
 
+}
+
+type Input = {
+	driverId: string,
+	rideId: string
 }
