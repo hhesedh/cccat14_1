@@ -1,16 +1,13 @@
 import AcceptRide from "../src/application/usecase/AcceptRide";
-import AccountDAO from "../src/application/repository/AccountRepository";
-import AccountDAODatabase from "../src/infra/repository/AccountRepositoryDatabase";
-import DatabaseConnection from "../src/infra/database/DatabaseConnection";
 import GetAccount from "../src/application/usecase/GetAccount";
 import GetRide from "../src/application/usecase/GetRide";
-import Logger from "../src/application/logger/Logger";
-import LoggerConsole from "../src/infra/logger/LoggerConsole";
-import PgPromiseAdapter from "../src/infra/database/PgPromiseAdapter";
 import RequestRide from "../src/application/usecase/RequestRide";
-import RideDAODatabase from "../src/infra/repository/RideRepositoryDatabase";
 import Signup from "../src/application/usecase/Signup";
-import sinon from "sinon";
+import DatabaseConnection from "../src/infra/database/DatabaseConnection";
+import PgPromiseAdapter from "../src/infra/database/PgPromiseAdapter";
+import LoggerConsole from "../src/infra/logger/LoggerConsole";
+import AccountRepositoryDatabase from "../src/infra/repository/AccountRepositoryDatabase";
+import RideRepositoryDatabase from "../src/infra/repository/RideRepositoryDatabase";
 
 
 let signup: Signup;
@@ -22,14 +19,14 @@ let databaseConnection: DatabaseConnection;
 
 beforeEach(() => {
 	databaseConnection = new PgPromiseAdapter();
-	const accountDAO = new AccountDAODatabase(databaseConnection);
-	const rideDAO = new RideDAODatabase();
+	const accountRepositoryDatabase = new AccountRepositoryDatabase(databaseConnection);
+	const rideRepositoryDatabase = new RideRepositoryDatabase(databaseConnection);
 	const logger = new LoggerConsole();
-	signup = new Signup(accountDAO, logger);
-	getAccount = new GetAccount(accountDAO);
-	requestRide = new RequestRide(rideDAO, accountDAO, logger);
-	getRide = new GetRide(rideDAO, logger);
-	acceptRide = new AcceptRide(rideDAO, accountDAO);
+	signup = new Signup(accountRepositoryDatabase, logger);
+	getAccount = new GetAccount(accountRepositoryDatabase);
+	requestRide = new RequestRide(rideRepositoryDatabase, accountRepositoryDatabase, logger);
+	getRide = new GetRide(rideRepositoryDatabase, logger);
+	acceptRide = new AcceptRide(rideRepositoryDatabase, accountRepositoryDatabase);
 })
 
 test("Deve aceitar uma corrida", async function () {

@@ -1,13 +1,13 @@
-import Account from "../src/domain/Account";
-import AccountDAO from "../src/application/repository/AccountRepository";
-import AccountRepositoryDatabase from "../src/infra/repository/AccountRepositoryDatabase";
-import DatabaseConnection from "../src/infra/database/DatabaseConnection";
-import GetAccount from "../src/application/usecase/GetAccount";
-import Logger from "../src/application/logger/Logger";
-import LoggerConsole from "../src/infra/logger/LoggerConsole";
-import PgPromiseAdapter from "../src/infra/database/PgPromiseAdapter";
-import Signup from "../src/application/usecase/Signup";
 import sinon from "sinon";
+import Logger from "../src/application/logger/Logger";
+import AccountDAO from "../src/application/repository/AccountRepository";
+import GetAccount from "../src/application/usecase/GetAccount";
+import Signup from "../src/application/usecase/Signup";
+import Account from "../src/domain/Account";
+import DatabaseConnection from "../src/infra/database/DatabaseConnection";
+import PgPromiseAdapter from "../src/infra/database/PgPromiseAdapter";
+import LoggerConsole from "../src/infra/logger/LoggerConsole";
+import AccountRepositoryDatabase from "../src/infra/repository/AccountRepositoryDatabase";
 
 
 let signup: Signup;
@@ -16,10 +16,10 @@ let databaseConnection: DatabaseConnection;
 
 beforeEach(() => {
 	databaseConnection = new PgPromiseAdapter();
-	const accountDAO = new AccountRepositoryDatabase(databaseConnection);
+	const accountRepositoryDatabase = new AccountRepositoryDatabase(databaseConnection);
 	const logger = new LoggerConsole();
-	signup = new Signup(accountDAO, logger);
-	getAccount = new GetAccount(accountDAO);
+	signup = new Signup(accountRepositoryDatabase, logger);
+	getAccount = new GetAccount(accountRepositoryDatabase);
 })
 
 test("Deve criar uma conta para o passageiro", async function () {
@@ -182,18 +182,18 @@ test("Deve criar uma conta para o passageiro com fake", async function () {
 	};
 	const accounts: any = [];
 	const accountDAO: AccountDAO = {
-		async save (account: any): Promise<void> {
+		async save(account: any): Promise<void> {
 			accounts.push(account);
 		},
-		async getById (accountId: string): Promise<any> {
+		async getById(accountId: string): Promise<any> {
 			return accounts.find((account: any) => account.accountId === accountId);
 		},
-		async getByEmail (email: string): Promise<any> {
+		async getByEmail(email: string): Promise<any> {
 			return accounts.find((account: any) => account.email === email);
 		}
 	}
 	const logger: Logger = {
-		log (message: string): void {
+		log(message: string): void {
 			console.log(message);
 		}
 	}
