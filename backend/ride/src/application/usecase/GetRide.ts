@@ -1,15 +1,14 @@
-import crypto from "crypto";
 import Logger from "../logger/Logger";
-import RideDAO from "../repository/RideRepository";
+import RideRepository from "../repository/RideRepository";
 
 export default class GetRide {
 
-	constructor (private rideDAO: RideDAO, private logger: Logger) {
+	constructor(private rideRepository: RideRepository, private logger: Logger) {
 	}
 
-	async execute (rideId: string): Promise<Output> {
+	async execute(rideId: string): Promise<Output> {
 		this.logger.log(`getRide`);
-		const ride = await this.rideDAO.getById(rideId);
+		const ride = await this.rideRepository.getById(rideId);
 		if (!ride) throw new Error("Ride not found");
 		return {
 			rideId: ride.rideId,
