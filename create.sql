@@ -1,3 +1,4 @@
+
 create schema cccat14;
 
 create table cccat14.account (
@@ -10,25 +11,34 @@ create table cccat14.account (
 	is_driver boolean not null default false
 );
 
-
-create table cccat14.ride(
-    ride_id uuid,
-    passenger_id uuid,
-    driver_id uuid,
-    status text,
-    fare numeric,
-    distance numeric,
-    from_lat numeric,
-    from_long numeric,
-    to_lat numeric,
-    to_long numeric,
-    date timestamp
+create table cccat14.ride (
+	ride_id uuid primary key,
+	passenger_id uuid,
+	driver_id uuid,
+	fare numeric,
+	distance numeric,
+	status text,
+	from_lat numeric,
+	from_long numeric,
+	to_lat numeric,
+	to_long numeric,
+	last_lat numeric,
+	last_long numeric,
+	date timestamp
 );
 
 create table cccat14.position (
-    position_id uuid,
+	position_id uuid primary key,
+	ride_id uuid,
+	lat numeric,
+	long numeric,
+	date timestamp
+);
+
+create table cccat14.transaction (
+    transaction_id uuid primary key,
     ride_id uuid,
-    lat numeric,
-    long numeric,
-    date timestamp
+    amount numeric,
+    date timestamp,
+    status text
 );
